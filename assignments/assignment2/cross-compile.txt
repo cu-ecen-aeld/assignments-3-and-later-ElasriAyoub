@@ -1,0 +1,7 @@
+Using built-in specs.
+COLLECT_GCC=aarch64-none-linux-gnu-gcc
+Target: aarch64-none-linux-gnu
+Configured with: /data/jenkins/workspace/GNU-toolchain/arm-10-2/src/gcc/configure --target=aarch64-none-linux-gnu --prefix= --with-sysroot=/aarch64-none-linux-gnu/libc --with-build-sysroot=/data/jenkins/workspace/GNU-toolchain/arm-10-2/build-mingw-aarch64-none-linux-gnu/install//aarch64-none-linux-gnu/libc --with-bugurl=https://bugs.linaro.org/ --enable-gnu-indirect-function --enable-shared --disable-libssp --disable-libmudflap --enable-checking=release --enable-languages=c,c++,fortran --with-gmp=/data/jenkins/workspace/GNU-toolchain/arm-10-2/build-mingw-aarch64-none-linux-gnu/host-tools --with-mpfr=/data/jenkins/workspace/GNU-toolchain/arm-10-2/build-mingw-aarch64-none-linux-gnu/host-tools --with-mpc=/data/jenkins/workspace/GNU-toolchain/arm-10-2/build-mingw-aarch64-none-linux-gnu/host-tools --with-isl=/data/jenkins/workspace/GNU-toolchain/arm-10-2/build-mingw-aarch64-none-linux-gnu/host-tools --host=i686-w64-mingw32 --enable-fix-cortex-a53-843419 --with-libiconv-prefix=/data/jenkins/workspace/GNU-toolchain/arm-10-2/build-mingw-aarch64-none-linux-gnu/host-tools --with-pkgversion='GNU Toolchain for the A-profile Architecture 10.3-2021.07 (arm-10.29)'
+Thread model: posix
+Supported LTO compression algorithms: zlib
+gcc version 10.3.1 20210621 (GNU Toolchain for the A-profile Architecture 10.3-2021.07 (arm-10.29))
