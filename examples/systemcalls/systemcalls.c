@@ -17,6 +17,12 @@ bool do_system(const char *cmd)
  *   or false() if it returned a failure
 */
 
+    int ret = system(cmd);
+    if (ret == -1) 
+    {
+        perror("system failed");
+    }
+
     return true;
 }
 
@@ -38,31 +44,50 @@ bool do_exec(int count, ...)
 {
     va_list args;
     va_start(args, count);
-    char * command[count+1];
-    int i;
-    for(i=0; i<count; i++)
-    {
+
+    char *command[count + 1];
+    for (int i = 0; i < count; i++) {
         command[i] = va_arg(args, char *);
     }
-    command[count] = NULL;
-    // this line is to avoid a compile warning before your implementation is complete
-    // and may be removed
-    command[count] = command[count];
+    command[count] = NULL; // Null-terminate the argument list
 
-/*
- * TODO:
- *   Execute a system command by calling fork, execv(),
- *   and wait instead of system (see LSP page 161).
- *   Use the command[0] as the full path to the command to execute
- *   (first argument to execv), and use the remaining arguments
- *   as second argument to the execv() command.
- *
-*/
+    command[count] = command[count];
 
     va_end(args);
 
-    return true;
+    // Check if the command path is absolute
+    if (command[0][0] != '/') {
+        fprintf(stderr, "Error: Command '%s' must be an absolute path.\n", command[0]);
+        return false;
+    }
+
+    pid_t pid = fork();
+    if (pid < 0) {
+        // Fork failed
+        perror("fork");
+        return false;
+    } else if (pid == 0) {
+        // In the child process
+        execv(command[0], command);
+        perror("execv failed");
+        _exit(EXIT_FAILURE); // Exit with failure if execv fails
+    } else {
+        // In the parent process
+        int status;
+        if (waitpid(pid, &status, 0) < 0) {
+            perror("waitpid");
+            return false;
+        }
+
+        // Check if the child process terminated successfully
+        if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
+
 
 /**
 * @param outputfile - The full path to the file to write with command output.
@@ -94,6 +119,54 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
 */
 
     va_end(args);
+
+    // Open the output file for writing
+    int fd = open(outputfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (fd < 0) {
+        perror("open");
+        return false;
+    }
+
+    pid_t pid = fork();
+    if (pid < 0) {
+        // Fork failed
+        perror("fork");
+        close(fd);
+        return false;
+    } else if (pid == 0) {
+        // In the child process
+
+        // Redirect standard output to the output file
+        if (dup2(fd, STDOUT_FILENO) < 0) {
+            perror("dup2");
+            close(fd);
+            _exit(EXIT_FAILURE);
+        }
+
+        close(fd); // Close the original file descriptor
+
+        // Execute the command
+        execv(command[0], command);
+        perror("execv"); // If execv() returns, it must have failed
+        _exit(EXIT_FAILURE);
+    } else {
+        // In the parent process
+        close(fd); // Close the file descriptor in the parent
+
+        int status;
+        if (waitpid(pid, &status, 0) < 0) {
+            perror("waitpid");
+            return false;
+        }
+
+        // Check if the child process terminated successfully
+        if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 
     return true;
 }
