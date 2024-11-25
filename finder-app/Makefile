@@ -1,18 +1,19 @@
-CROSS_COMPILE = Native
+ifeq ($(CROSS_COMPILE), aarch64-none-linux-gnu-)
+	CC := $(CROSS_COMPILE)gcc
+else
+	CC := cc
+endif
 
-ifeq ($(CROSS_COMPILE),aarch64-none-linux-gnu-)
-		CC := $(CROSS_COMPILE)gcc
-	else
-		CC :=cc
-	endif
+all: writer
 
 writer: writer.o
-	$(lib) writer.o  -o writer
+	$(CC) -o writer writer.o
 
 writer.o: writer.c
-	$(lib) -c writer.c  -o writer.o
+	$(CC) -c writer.c
 
-
+	
+# Clean target: safely remove generated files
 clean:
-	rm -f writer
-	rm *.o
+	@if [ -f writer ]; then rm -f writer; fi
+	@if [ -f writer.o ]; then rm -f writer.o; fi
