@@ -1,9 +1,9 @@
 CROSS_COMPILE = Native
 
 ifeq ($(CROSS_COMPILE),aarch64-none-linux-gnu-)
-		lib=aarch64-none-linux-gnu-gcc
+		CC := $(CROSS_COMPILE)gcc
 	else
-		lib=cc
+		CC :=cc
 	endif
 
 writer: writer.o
